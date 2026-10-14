@@ -3,6 +3,15 @@
 What changed in each version of the Veylo Server. The newest is first. To
 update, see [Updating](README.md#updating).
 
+## 0.1.2 — 14 October 2026
+
+- Some channels played on Android but not on iPhone, iPad or Apple TV, which
+  said the format was not supported. Their sound was in an older kind of AAC
+  that Apple devices cannot decode. The server now converts any sound that is
+  not standard AAC into standard AAC as it records or shows a channel, so
+  every device can play it. The picture is untouched, and channels that
+  already used standard AAC are passed through exactly as before.
+
 ## 0.1.1 — 14 October 2026
 
 **Admin page**
