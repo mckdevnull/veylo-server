@@ -3,6 +3,21 @@
 What changed in each version of the Veylo Server. The newest is first. To
 update, see [Updating](README.md#updating).
 
+## 0.1.3 — 14 October 2026
+
+- **Rewind live TV further.** A channel watched through the server can now be
+  rewound by 5 minutes, 30 minutes or 1 hour, chosen under **Storage** on the
+  admin page. The default is 30 minutes (it was always 5). The apps need no
+  update: they play whatever the server keeps.
+- **Storage** now shows how much space the live rewind buffers take, next to
+  the number of channels open.
+- If free space runs low, live rewind buffers are shortened first, well before
+  the point at which recordings stop. A recording is never cut to make room
+  for them.
+
+For developers: the server API is now 1.2.0. It adds the recording setting
+`live_rewind_s`; `window_s` on a live session now follows it.
+
 ## 0.1.2 — 14 October 2026
 
 - Some channels played on Android but not on iPhone, iPad or Apple TV, which
