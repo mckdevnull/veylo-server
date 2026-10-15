@@ -3,6 +3,41 @@
 What changed in each version of the Veylo Server. The newest is first. To
 update, see [Updating](README.md#updating).
 
+## 0.2.0 — 15 October 2026
+
+Use it with Veylo for Android 0.1.23 or later and Veylo for iPhone, iPad and
+Apple TV 1.0 (22) or later. Older apps keep working, unencrypted, until they
+are updated.
+
+- **Your devices now talk to the server over an encrypted connection.** The
+  server makes its own identity the first time it starts (nothing to install,
+  buy or configure) and answers encrypted and plain connections on the same
+  port, so no compose file, port or firewall needs to change. Provider logins,
+  the pairing token and synced settings no longer cross your home network in
+  plain text, once the apps that use it are updated. Older apps carry on over
+  plain http.
+- **The admin page** shows a lock and the secure address at the top, a check
+  code next to the pairing code, and a new **Secure connection** card: the
+  server's identity, how many devices are encrypted, which ones are not, a
+  switch to refuse unencrypted connections once every device is encrypted
+  (it is on by default, so nothing stops working), and **Replace identity…**
+  for the rare case that the server's data folder was copied. Replacing the
+  identity signs every device out; each must be paired again.
+- Your browser will warn the first time you open the https address, because
+  the server made the identity itself. That is expected. See
+  [Secure connection](README.md#secure-connection).
+- The admin page has new colours, in the Veylo logo palette, on every section.
+- Video still plays over the plain address for now: Apple's player cannot check
+  this server's identity.
+- A new guide, [Reach it from outside your home](docs/remote-access.md#reach-it-from-outside-your-home),
+  shows how to get an https address with no browser warning using Tailscale.
+
+For developers: the server API is now 1.3.0. It adds `tls_cert_sha256` to
+`GET /api/v1/info`, the pairing link parameter `f`, the error `tls_required`,
+the setting `allow_plain_http`, and `encrypted` on admin device entries
+(`docs/server-api.md` §15.7). Media links are absolute `http://` links when
+asked for over TLS.
+
 ## 0.1.3 — 14 October 2026
 
 - **Rewind live TV further.** A channel watched through the server can now be
