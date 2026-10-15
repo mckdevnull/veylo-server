@@ -26,7 +26,11 @@ Docker Desktop once; after that Veylo Server looks after itself.
   all the time. A recording is made by this Mac. A Mac that is asleep records
   nothing (see "Keep the Mac awake" below).
 - Free disk space for recordings: roughly 1 to 2 GB for every hour of HD, and
-  5 to 8 GB an hour for 4K.
+  5 to 8 GB an hour for 4K. The Recording size setting can shrink HD
+  recordings to about a quarter of that after they end (see the admin page);
+  while it does, the server needs about 1 GB more memory, so give Docker at
+  least 2 GB and set `mem_limit` in `compose.yaml` to `2g` (the default, 512m,
+  is too small: the server then leaves recordings as recorded and says so).
 - Your phone or television on the same home network (the same Wi-Fi or the
   same router) as the Mac.
 
@@ -165,6 +169,7 @@ services:
     volumes:
       - veylo-data:/data
       - ./recordings:/recordings
+    # Recording size Smaller or Smallest? Change this to 2g.
     mem_limit: 512m
     pids_limit: 256
     read_only: true
@@ -202,7 +207,7 @@ What the important lines mean:
 | `VEYLO_PUBLIC_URL` | The address your devices use at home. Pairing codes carry it |
 | `veylo-data:/data` | A storage area, managed by Docker, holding the database and its key |
 | `./recordings:/recordings` | Your recordings go in a folder called `recordings`, next to this file |
-| The rest (`mem_limit`, `pids_limit`, `read_only`, `cap_drop`, `no-new-privileges`) | Safety limits so that a fault in the server cannot take over the Mac. Leave them alone |
+| The rest (`mem_limit`, `pids_limit`, `read_only`, `cap_drop`, `no-new-privileges`) | Safety limits so that a fault in the server cannot take over the Mac. Leave them alone, with one exception: if you turn on Recording size (Smaller or Smallest), change `mem_limit` to `2g` |
 
 ## Step 7: Choose where recordings go
 

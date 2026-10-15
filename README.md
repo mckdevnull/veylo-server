@@ -32,7 +32,7 @@ services:
     volumes:
       - veylo-data:/data
       - ./recordings:/recordings
-    mem_limit: 512m
+    mem_limit: 512m   # 2g if you turn on Recording size (admin page)
     pids_limit: 256
     read_only: true
     tmpfs:
@@ -287,6 +287,11 @@ you see the container restarting with "out of memory", raise `mem_limit` in
 The server itself aims to stay under 256 MB of that, leaving the rest to the
 programs that do the recording; if you raise `mem_limit`, you can raise that
 aim with it by setting `GOMEMLIMIT` (for example `GOMEMLIMIT=512MiB`).
+
+Making recordings smaller (Recording size: Smaller or Smallest) needs more:
+the encoder alone is about 650 MB. Set `mem_limit: 2g` if you use it. The
+server reads its memory limit at start, and under 1.5 GB it does not shrink
+anything: recordings wait as recorded, and the admin page says why.
 
 Four devices each playing a recording, keeping a long-poll open and calling
 the API held 14 connections between them at most (one player holds three or

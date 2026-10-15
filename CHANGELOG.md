@@ -3,6 +3,67 @@
 What changed in each version of the Veylo Server. The newest is first. To
 update, see [Updating](README.md#updating).
 
+## 0.3.0 — 15 October 2026
+
+- **A recording no longer quietly records a "channel offline" screen as the
+  programme.** When the channel's picture stands still and its sound goes
+  silent for 20 seconds, or the picture suddenly changes size and stays that
+  way, the server takes it for the provider's stand-in screen. If the
+  recording has another source, it switches to it and tries the first one
+  again after a few minutes. If it has none, it keeps recording (nothing is
+  ever stopped, deleted or cut) and notes when the stand-in was shown. A still
+  picture with sound, such as a radio channel, is never taken for one. Moving
+  or animated "offline" screens are not detected yet.
+- **A channel recorded from one provider can now fall back to another.** If
+  the scheduled source fails and another of your providers carries a channel
+  with exactly the same guide id, the server records from that one instead,
+  within that provider's connection limit. The scheduled source is always
+  tried first.
+- The check costs little: the server looks at one picture every second or two,
+  shrunk to a few pixels, and the sound once a second. In our measurement a
+  1080p50 channel at 8 Mbit/s took about 2 to 4 % of one CPU core for it.
+- **Smaller recordings.** A recording is the broadcast as sent: about 4 GB an
+  hour for a 1080p60 channel. A new **Recording size** setting on the admin
+  page (and in the apps, through the API) can make each recording smaller
+  once it has ended: **Smaller** re-encodes the picture to HEVC at the same
+  resolution (about a quarter of the size), **Smallest** also scales it to
+  720p (about an eighth). Sound is never re-encoded. **Original**, the
+  default, keeps recordings exactly as they are now. It applies to
+  recordings that finish after the change.
+- Shrinking is slow on a small computer: a one-hour recording can take one to
+  three hours on a NAS or mini PC. The server shrinks one recording at a
+  time, at the lowest priority, and stops whenever it is recording or
+  someone is watching live, carrying on afterwards. Every part of a
+  recording is re-encoded and checked before any of it replaces the
+  original, and only while nobody is playing it; if any part fails, the
+  whole recording is kept as it was. Pictures taller than 1080 lines and HDR
+  are kept as recorded.
+- While it re-encodes, the server uses up to about 1 GB of memory more than
+  usual. If you run it with a memory limit, allow for that. The shipped
+  `mem_limit: 512m` is too small: the server reads its limit at start and,
+  under 1.5 GB, does not start the encoder (it would be killed every time).
+  Recordings wait as recorded, nothing fails, and the admin page says "Shrinking
+  is paused" next to Recording size. Change `mem_limit` to `2g` in
+  `compose.yaml` if you turn Recording size on.
+- The Storage card shows how much shrinking has saved, the recording being
+  shrunk with its progress, and the last few results.
+- **Record from: HD (720p) when available.** For a channel that has both an
+  HD and an FHD source, recordings can use the HD one: smaller, at no extra
+  work for the server.
+- Measured on 60 s of 1080p60 inside the server image, on a 16-core host that
+  was heavily loaded: Smaller (x265 `fast`, CRF 24) encoded at about 0.7×
+  real time, Smallest (720p, CRF 26) at about 1.4×, using about 650 MB and
+  460 MB of memory (x265 with two frame threads and a 20-frame lookahead; the
+  encoder's address space is capped at 3 GB). The encoder's thread pool is sized from the CPUs the
+  container may use: left to itself inside Docker Desktop it ran 2.5 times
+  slower.
+
+For developers: the server API is now 1.4.0. It adds `has_fallback` to
+schedules, `stand_ins` and `shrink` to recordings, and the recording settings
+`recording_size` and `source_quality` (`docs/server-api.md` §8.1, §9.1, §13).
+All are additive; older apps ignore them, and a settings write from an older
+app keeps the new settings as they are.
+
 ## 0.2.0 — 15 October 2026
 
 Use it with Veylo for Android 0.1.23 or later and Veylo for iPhone, iPad and

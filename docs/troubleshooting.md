@@ -213,7 +213,9 @@ it says "It was stopped on purpose." and the part before is kept.
 ## The disk is filling up
 
 Recordings are kept exactly as broadcast, so they are large: roughly 1 to 2 GB
-an hour for HD and 5 to 8 GB an hour for 4K.
+an hour for HD and 5 to 8 GB an hour for 4K. To make new recordings smaller, set **Recording size**
+to **Smaller** or **Smallest** on the admin page: each recording is re-encoded
+after it ends, one at a time, and the Storage card shows what it saved.
 
 **To see how much space is used:** on the admin page, in the **Storage**
 section, **Recordings** shows the space used and how many recordings there
@@ -301,7 +303,14 @@ Look at the log: `docker compose logs --tail 50 veylo-server`.
   [Using the server away from home](remote-access.md)).
 - The word "out of memory". The server is limited to 512 MB so that a fault
   cannot take over the computer. Open `compose.yaml`, change `mem_limit: 512m`
-  to `mem_limit: 1g`, and run `docker compose up -d`.
+  to `mem_limit: 1g`, and run `docker compose up -d`. If you use Recording
+  size Smaller or Smallest, use `mem_limit: 2g` instead.
+- "Shrinking is paused: this server is limited to … of memory" on the admin
+  page, next to Recording size. The container's memory limit is too small for
+  the encoder, which needs about 0.65 GB of its own. Nothing has failed:
+  recordings wait, as recorded. Open `compose.yaml`, change `mem_limit: 512m`
+  to `mem_limit: 2g`, and run `docker compose up -d`; they are shrunk
+  afterwards.
 
 ## The server stops with "tls identity directory … could not be read"
 
