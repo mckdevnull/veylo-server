@@ -26,6 +26,7 @@ half a minute). The second shows the last 50 lines of what the server has said.
 - [The disk is filling up](#the-disk-is-filling-up)
 - [I lost the admin password, or it expired](#i-lost-the-admin-password-or-it-expired)
 - [The server keeps restarting](#the-server-keeps-restarting)
+- [The server stops with "tls identity directory … could not be read"](#the-server-stops-with-tls-identity-directory--could-not-be-read)
 - [I want to move the server to another computer](#i-want-to-move-the-server-to-another-computer)
 
 ## I cannot reach the admin page
@@ -301,6 +302,31 @@ Look at the log: `docker compose logs --tail 50 veylo-server`.
 - The word "out of memory". The server is limited to 512 MB so that a fault
   cannot take over the computer. Open `compose.yaml`, change `mem_limit: 512m`
   to `mem_limit: 1g`, and run `docker compose up -d`.
+
+## The server stops with "tls identity directory … could not be read"
+
+The log says, for example:
+
+```
+tls identity directory id-3f9a21c7aabbccdd could not be read; fix it or remove it by hand: …
+```
+
+(or a line beginning `tls identity in id-…` or `id-…: read key.pem`). The
+server keeps its secure-connection identity in the `tls` folder of its data
+volume. It found a part of it that exists but cannot be read or is damaged, for
+example after a restore that changed file permissions. It stops rather than
+make a new identity, because a new identity would silently make every paired
+device refuse the server.
+
+You have two choices:
+
+1. **Fix the file.** Make the named folder and the `key.pem` and `cert.pem`
+   inside it readable by the server's user again (the image runs as user
+   10001), then start the server. Nothing else changes and no device needs to
+   be paired again.
+2. **Start a new identity.** Remove the `tls` folder from the data volume by
+   hand and start the server. It makes a new identity, **and every device must
+   then be paired again** (they will stop syncing and ask).
 
 ## I want to move the server to another computer
 

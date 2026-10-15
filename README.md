@@ -13,8 +13,8 @@ otherwise cannot.
 ## Start it
 
 The server is published as a Docker image, `ghcr.io/mckdevnull/veylo-server`,
-for 64-bit Intel/AMD and ARM computers (including Apple silicon Macs).
-You need Docker Desktop (Mac or Windows) or Docker on Linux.
+for 64-bit Intel/AMD and ARM computers (including Apple silicon Macs and
+Raspberry Pi 4/5). You need Docker Desktop (Mac or Windows) or Docker on Linux.
 
 The install guides below take you through it step by step. In short, save this
 as `compose.yaml` in a folder of its own, replacing `192.168.1.20` with the
@@ -220,6 +220,34 @@ and says the disk is full.
 
 **What it will not do yet:** record a whole series from one request, or keep
 subtitles.
+
+## Secure connection
+
+The server makes its own identity (a key and a certificate, kept in the `tls`
+folder of the data volume) the first time it starts, and answers encrypted and
+plain connections on the same port. Apps that know about it pair using the
+identity in the QR code, then talk to the server over `https` on that same
+address. Older apps keep working over plain `http`.
+
+- The admin page shows the identity, how many devices are encrypted and which
+  are not, and has a switch, **Allow unencrypted connections from older
+  apps**, that is on by default. Turn it off once every device shows as
+  encrypted.
+- When you type the pairing code instead of scanning it, the device shows a
+  **check code**. It should match the one on the admin page.
+- Your browser will warn the first time you open the `https` address of the
+  admin page, because the identity is made by this server rather than bought.
+  That is expected: check that the identity the browser shows matches the one
+  on the page.
+- Video still plays over the plain address, because Apple's player cannot check
+  the server's identity.
+- **Replace identity…** (admin page) is for the case that someone copied the
+  server's data folder. Every device is signed out and must be paired again.
+- To keep the identity when you move the server to a new computer, move the
+  whole data volume, `tls` folder included. A backup of the data volume is a
+  copy of the key: keep it private.
+- For an address that works away from home with no browser warning, see
+  [Reach it from outside your home](docs/remote-access.md#reach-it-from-outside-your-home).
 
 ## Keeping it private
 

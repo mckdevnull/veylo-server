@@ -17,9 +17,11 @@ internet.
 
 Why:
 
-- The server speaks plain `http`. Nothing is encrypted. Your provider logins,
-  the admin password and the access of every paired device would travel across
-  the internet where anyone on the path could read them.
+- The server also speaks plain `http` on that port. Your admin password and
+  devices that have not updated would travel across the internet where anyone
+  on the path could read them. Its built-in encrypted connection protects the
+  devices that use it, but a server on the open internet is still not what it
+  is built for.
 - The server is built for a home network. It is not designed to be exposed to
   strangers who have all day to try it.
 
@@ -57,6 +59,43 @@ So:
 - `http://my-computer.tail1234.ts.net:8787` is **refused** by the server when
   you try to use it as the remote address, and the app would warn you that the
   connection is not encrypted. Use the `100.x.y.z` address instead.
+
+## Reach it from outside your home
+
+This is the easiest way to get an `https` address that every browser and phone
+trusts with no warning, with Tailscale doing the encryption. It works on top of
+Option 1 below: you still install Tailscale on the server's computer and on each
+device.
+
+1. In the Tailscale admin console (`https://login.tailscale.com/admin/dns`),
+   turn on **MagicDNS** and **HTTPS Certificates**.
+2. **Give the server's computer a neutral name** in Tailscale (for example
+   `hub`, not `smiths-livingroom`). The certificate Tailscale gets for it is
+   written to public Certificate Transparency logs, and anyone can read the
+   name there.
+3. On the server's computer, run:
+
+   ```sh
+   tailscale serve --bg 8787
+   ```
+
+   `--bg` keeps it running after a restart. Tailscale now answers on
+   `https://<computer-name>.<your-tailnet>.ts.net` and passes the traffic to
+   the server.
+4. Tell the server this is its remote address, as in Step 3 of Option 1, but
+   with the `https` name:
+
+   ```yaml
+         VEYLO_REMOTE_URL: "https://hub.your-tailnet.ts.net"
+   ```
+
+   then `docker compose up -d`. Devices paired after this learn both
+   addresses from the QR code.
+
+Devices accept this address because Tailscale's certificate is publicly
+trusted. At home they keep using the server's own identity. If the computer is
+asleep or Tailscale is off, there is no way in from outside. Do not use
+Tailscale Funnel for this: it would put the server on the public internet.
 
 ## Option 1: Tailscale
 
