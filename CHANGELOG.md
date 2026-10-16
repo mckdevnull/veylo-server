@@ -3,6 +3,23 @@
 What changed in each version of the Veylo Server. The newest is first. To
 update, see [Updating](README.md#updating).
 
+## 0.4.0 — 15 October 2026
+
+- **Choose which source of a merged channel plays.** When a channel comes from
+  more than one provider or stream, an app can now ask the server to play a
+  particular one. If only you are watching, the server switches to it; if
+  someone else is watching the same channel on another device, or it is being
+  recorded, you join what is already playing and the app says which source
+  that is. Switching never takes a provider over its connection limit: when
+  there is no room, the channel keeps playing as it was.
+
+For developers: the server API is now 1.5.0. `POST /api/v1/live` takes an
+optional `preferred_source`, and `/info` lists the capability
+`live_source_choice` (`docs/server-api.md` §10.2). Older apps send neither and
+see no change.
+
+- A remuxer that has already exited is never signalled again (its process id could belong to another program by then), and each leftover temporary file the start-up sweep removes is logged.
+
 ## 0.3.0 — 15 October 2026
 
 - **A recording no longer quietly records a "channel offline" screen as the
