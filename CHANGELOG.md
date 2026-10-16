@@ -3,6 +3,26 @@
 What changed in each version of the Veylo Server. The newest is first. To
 update, see [Updating](README.md#updating).
 
+## 0.5.0 — 15 October 2026
+
+- **Skip the provider's "channel offline" screen in a recording.** When a
+  recording caught the provider's stand-in screen, the server now says
+  exactly where it is in the recording, so an app can offer to jump past it.
+  Nothing is cut from the recording.
+- **Animated "channel offline" screens are noticed too**, when they loop
+  silently for 30 seconds. A still or animated screen that plays music or
+  speech is still not noticed; a sudden change of picture size is noticed
+  with or without sound.
+- **A sudden change of picture size is acted on sooner**: after 8 seconds
+  instead of 20. A still, silent screen is still given 20 seconds.
+
+For developers: the server API is now 1.6.0. Each entry of a recording's
+`stand_ins` has `start_ms` and `end_ms` (media time), `signal` can be
+`looping_silent`, a recording's media playlists carry each stand-in as an
+`EXT-X-DATERANGE` with `CLASS="tv.veylo.standin"`, and `/info` lists the
+capability `standin_spans` (`docs/server-api.md` §9.1, §11.2). Older apps see
+no change.
+
 ## 0.4.0 — 15 October 2026
 
 - **Choose which source of a merged channel plays.** When a channel comes from
